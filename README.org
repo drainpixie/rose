@@ -1,0 +1,8 @@
+* 🥀 rose
+
+a repository of scripts with nix integration
+follows [[https://ertt.ca/nix/shell-scripts/][this guide]]
+
+
+* 🖥️ dev
+* 📑 todo
