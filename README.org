@@ -3,6 +3,12 @@
 a repository of scripts with nix integration
 follows [[https://ertt.ca/nix/shell-scripts/][this guide]]
 
-
 * 🖥️ dev
+
+#+BEGIN_SRC sh
+$ nix build .#name
+$ ./result/bin/name
+
+#+END_SRC
+
 * 📑 todo

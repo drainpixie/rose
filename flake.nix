@@ -3,28 +3,25 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, utils, ... }@:
-    utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-        bins = builtins.attrNames (builtins.readDir ./scripts);
-
-        script = name: pkgs.writeScriptBin name ''
-          #!${pkgs.stdenv.shell}
-          # ${name}:
-          # ${description}
-
-          ${builtins.readFile ./scripts/${name}}
-        '';
-
-        scripts = map script bins;
-      in
-      {
-        packages.${system} = {
-          @inherit scripts;
-        };
-      });
+  outputs = { self, nixpkgs, ... }:
+    let
+      systems = [ "x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
+      # bins = builtins.attrNames (builtins.readDir ./scripts);
+    in
+    {
+      packages = forAllSystems (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          script = name: (pkgs.writeScriptBin name (builtins.readFile ./scripts/${name}.sh)).overrideAttrs (old: {
+            buildCommand = "${old.buildCommand}\n patchShebangs $out";
+          });
+        in
+        rec
+        {
+          fetch = script "fetch";
+        });
+    };
 }
